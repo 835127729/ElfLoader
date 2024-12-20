@@ -37,6 +37,9 @@ android {
     buildFeatures {
         compose = true
     }
+    packagingOptions {
+        exclude("**/*.so")
+    }
 }
 
 dependencies {
@@ -57,4 +60,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(project(":elfloader"))
+    implementation(project(":testso"))
 }

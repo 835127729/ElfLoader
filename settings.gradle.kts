@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "ElfLoader"
 include(":app")
 include(":elfloader")
+include(":testso")
