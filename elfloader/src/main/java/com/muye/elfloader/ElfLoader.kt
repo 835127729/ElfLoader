@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import dalvik.system.BaseDexClassLoader
 import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 object ElfLoader {
-    private val installedDir = CopyOnWriteArrayList<File>()
+    private val installedDir = CopyOnWriteArraySet<File>()
 
     fun install(folder: File): Boolean {
         if (installedDir.contains(folder)) {
@@ -47,7 +48,7 @@ object ElfLoader {
             return false
         }
         if (runCatching {
-                //2、try system load first
+                //2、try system load first, it probably succeed in Android N
                 System.load(file.absolutePath)
                 true
             }.getOrDefault(false)) {

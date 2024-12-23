@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    `maven-publish`
 }
 
 android {
@@ -29,6 +30,31 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.muye"
+            artifactId = "elfloader"
+            version = "1.0.0"
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+
+        repositories {
+            maven {
+                name = "localRepo"
+                url = uri(layout.buildDirectory.dir("repo"))
+            }
+        }
     }
 }
 

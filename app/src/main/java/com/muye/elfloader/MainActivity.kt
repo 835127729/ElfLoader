@@ -23,9 +23,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.muye.elfloader.ui.theme.ElfLoaderTheme
 import com.muye.testso.NativeLib
+import dalvik.system.BaseDexClassLoader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.concurrent.thread
 
 class MainActivity : ComponentActivity() {
     private lateinit var elfDir: File;
@@ -100,7 +102,7 @@ class MainActivity : ComponentActivity() {
                             if (ElfLoader.loadLibrary("testso3")) {
                                 toast("加载成功")
                             } else {
-                                toast("加载失败")
+                                toast("加载失败, loadLibrary()需要先添加目录到ClassLoader")
                             }
                         }) {
                             Text("3.1、loadLibrary()加载testso3")

@@ -158,28 +158,6 @@ class ReadElf(file: File) : AutoCloseable {
     private var addressSize = 4
     private lateinit var ehdr: Ehdr
 
-    private val shdrs: Lazy<List<Shdr>> = lazy {
-        val list = mutableListOf<Shdr>()
-        for (i in 0..<ehdr.e_shnum.toInt()) {
-            randomAccessFile.seek((ehdr.e_shoff + (i * ehdr.e_shentsize.toInt()).toULong()).toLong())
-            list.add(
-                Shdr(
-                    sh_name = readWord(),
-                    sh_type = readWord(),
-                    sh_flags = readXword(),
-                    sh_addr = readAddress(),
-                    sh_offset = readOffset(),
-                    sh_size = readXword(),
-                    sh_link = readWord(),
-                    sh_info = readWord(),
-                    sh_addralign = readXword(),
-                    sh_entsize = readXword()
-                )
-            )
-        }
-        list
-    }
-
     private val phdrs: Lazy<List<Phdr>> = lazy {
         val list = mutableListOf<Phdr>()
         for (i in 0..<ehdr.e_phnum.toInt()) {
@@ -203,12 +181,6 @@ class ReadElf(file: File) : AutoCloseable {
     private val dynPhdr: Lazy<Phdr> = lazy {
         phdrs.value.first {
             it.p_type == PT_DYNAMIC
-        }
-    }
-
-    private val strShdr: Lazy<Shdr> = lazy {
-        shdrs.value.first {
-            it.sh_type == SHT_STRTAB
         }
     }
 
@@ -305,8 +277,13 @@ class ReadElf(file: File) : AutoCloseable {
         }
     }
 
+    private val dtStrTab = lazy {
+        getDynByTag(DT_STRTAB).firstOrNull()
+    }
+
     fun getString(offset: Off): String {
-        randomAccessFile.seek((strShdr.value.sh_offset + offset).toLong())
+        val strTab = dtStrTab.value ?: return ""
+        randomAccessFile.seek((strTab.d_val + offset).toLong())
         randomAccessFile.read(bytes)
         for (i in bytes.indices) {
             if (bytes[i] == 0.toByte()) {
