@@ -31,6 +31,15 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        prefabPublishing = true
+        prefab = true
+    }
+    prefab {
+        create("elfloader") {
+            headers = "src/main/cpp/include"
+        }
+    }
     publishing {
         singleVariant("release") {
             withSourcesJar()
